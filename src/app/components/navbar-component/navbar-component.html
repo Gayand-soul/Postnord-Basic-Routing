@@ -1,0 +1,18 @@
+
+<!--Route= med routerLInk -->
+
+
+
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a class="brand-link" routerLink="/">Learning Routing</a>
+    </div>
+    <ul class="nav-menu">
+      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+      <li><a routerLink="/page1" routerLinkActive="active">Page 1</a></li>
+      <li><a routerLink="/page2" routerLinkActive="active">Page 2</a></li>
+      <li><a routerLink="/page3" routerLinkActive="active">Page 3</a></li>
+    </ul>
+  </div>
+</nav>
