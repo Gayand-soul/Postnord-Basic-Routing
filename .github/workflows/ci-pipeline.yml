@@ -12,7 +12,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Uppdaterad till v4
       
       - name: List files
         run: ls -la
@@ -25,11 +25,11 @@ jobs:
             echo "⚠️ Inga HTML-filer hittades i roten"
           fi
       
-      # SAST - Static Application Security Testing
+      # SAST med rätt version av CodeQL
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3  # Ändrad till v3
         with:
-          languages: javascript  # För HTML/CSS/JS-projekt
+          languages: javascript-typescript  # Uppdaterat språknamn
       
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3  # Ändrad till v3
