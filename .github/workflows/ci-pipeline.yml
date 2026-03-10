@@ -25,14 +25,14 @@ jobs:
             echo "⚠️ Inga HTML-filer hittades i roten"
           fi
       
-      # SAST för HTML/CSS med hjälp av Lighthouse CI (webbprestanda & säkerhet)
+      # Lighthouse CI med korrekt konfiguration
       - name: Run Lighthouse CI
         run: |
           npm install -g @lhci/cli
-          lhci autorun --upload.target=temporary-public-storage || echo "Lighthouse kördes men hittade inga allvarliga problem"
+          lhci autorun  # Nu kommer den att läsa lighthouserc.js automatiskt!
         continue-on-error: true
       
-      # SCA - Sårbarhetskoll av beroenden (även för statiska projekt)
+      # SCA - Sårbarhetskoll av beroenden
       - name: Run SCA with Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
@@ -41,20 +41,14 @@ jobs:
           format: 'HTML'
         continue-on-error: true
       
-      # Säkerhetskopiering: Enkel grep-baserad säkerhetskontroll
+      # Custom Security Scan
       - name: Custom Security Scan
         run: |
           echo "🔍 Söker efter potentiella säkerhetsrisker..."
-          
-          # Kolla efter inline JavaScript (kan indikera XSS-risker)
           echo "=== Inline JavaScript (onclick, onload, etc.) ==="
           grep -r -i "onload=" --include="*.html" . || echo "Inga inline event handlers hittades"
           grep -r -i "onclick=" --include="*.html" . || echo "✓ Inga onclick hittades"
-          
-          # Kolla efter externa skriptkällor (CDN, etc.)
           echo "=== Externa skript ==="
           grep -r "<script" --include="*.html" . | grep "src=" || echo "Inga externa skript hittades"
-          
-          # Kolla efter osäkra länkar (http://)
           echo "=== Osäkra http-länkar ==="
           grep -r "http://" --include="*.html" . || echo "✓ Inga osäkra http-länkar hittades"
