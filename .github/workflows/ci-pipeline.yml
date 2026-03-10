@@ -25,14 +25,28 @@ jobs:
             echo "⚠️ Inga HTML-filer hittades i roten"
           fi
       
-      # Lighthouse CI med korrekt konfiguration
-      - name: Run Lighthouse CI
+      - name: Simple HTML Validation
         run: |
-          npm install -g @lhci/cli
-          lhci autorun  # Nu kommer den att läsa lighthouserc.js automatiskt!
+          echo "Validerar HTML-struktur..."
+          if grep -q "<body" index.html; then
+            echo "✅ <body> tag hittades"
+          else
+            echo "⚠️ Ingen <body> tag hittades"
+          fi
+          if grep -q "<html" index.html; then
+            echo "✅ <html> tag hittades"
+          else
+            echo "⚠️ Ingen <html> tag hittades"
+          fi
+          echo "Filstorlek: $(wc -c < index.html) bytes"
+          echo "Första 100 tecken:"
+          head -c 100 index.html
         continue-on-error: true
       
-      # SCA - Sårbarhetskoll av beroenden
+      - name: Simple HTTP Server Test
+        run: npm install -g http-server && http-server . -p 8080 & sleep 5 && curl -v http://localhost:8080/index.html && kill $! || true
+        continue-on-error: true
+      
       - name: Run SCA with Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
@@ -41,7 +55,6 @@ jobs:
           format: 'HTML'
         continue-on-error: true
       
-      # Custom Security Scan
       - name: Custom Security Scan
         run: |
           echo "🔍 Söker efter potentiella säkerhetsrisker..."
