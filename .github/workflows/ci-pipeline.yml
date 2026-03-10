@@ -2,7 +2,7 @@ name: CI/CD Pipeline with Security
 
 on:
   push:
-    branches: [ master ]  # Ändra till master om du använder master
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -14,18 +14,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: List files (verifiera att koden finns)
+      - name: List files
         run: ls -la
       
-      - name: Setup web server for testing
-        run: |
-          echo "Webbplatsen innehåller:" 
-          find . -name "*.html" | wc -l
-      
-      - name: Validate HTML (grundläggande kontroll)
+      - name: Validate HTML
         run: |
           if grep -q "<html" *.html 2>/dev/null; then
             echo "✅ HTML-filer hittades"
           else
             echo "⚠️ Inga HTML-filer hittades i roten"
           fi
+      
+      # SAST - Static Application Security Testing
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript  # För HTML/CSS/JS-projekt
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
